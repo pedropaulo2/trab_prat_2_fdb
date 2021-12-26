@@ -1,7 +1,7 @@
 from csv import reader
 
 from typing import List
-from data_classes import Aluno, Disciplina, Historico, Professor, Turma
+from file_reader.data_classes import Aluno, Disciplina, Historico, Professor, Turma
 
 
 class LeitorCSV:
@@ -21,7 +21,7 @@ class LeitorCSV:
         LeitorCSV.ler_csv_turmas()
 
     @staticmethod
-    def __ler_csv_alunos():
+    def ler_csv_alunos():
         with open("data/Alunos.csv", encoding="utf-8") as file:
             csv_reader = reader(file)
             csv_reader.__next__()  # pulando a primeira linha do arquivo
