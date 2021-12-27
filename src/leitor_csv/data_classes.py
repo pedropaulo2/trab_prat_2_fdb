@@ -27,7 +27,7 @@ class Historico:
             codigo_turma: int,
             codigo_disc: int,
             codigo_professor: int,
-            ano: float,
+            ano: str,
             frequencia: float,
             nota: float) -> None:
 
@@ -63,7 +63,7 @@ class Turma:
             codigo_turma: int,
             codigo_disc: int,
             codigo_professor: int,
-            ano: float,
+            ano: str,
             horario: str) -> None:
         self.codigo_turma = codigo_turma
         self.codigo_disc = codigo_disc
