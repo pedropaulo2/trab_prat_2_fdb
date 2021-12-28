@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import psycopg2
 
 from leitor_csv.data_classes import Aluno, Disciplina, Historico, Professor, Turma
@@ -85,6 +85,7 @@ class DB:
 
         except Exception as e:
             print("Erro ao criar conexão! Erro: ", e)
+            cls.conn.close()
             exit(1)
 
     @classmethod
@@ -102,6 +103,7 @@ class DB:
             cls.conn.commit()
         except Exception as e:
             print("Erro ao excluir dados! Erro: ", e)
+            cls.conn.close()
             exit(1)
 
     @classmethod
@@ -115,6 +117,7 @@ class DB:
             cls.conn.commit()
         except Exception as e:
             print("Erro ao criar tabelas! Erro: ", e)
+            cls.conn.close()
             exit(1)
 
     @classmethod
@@ -132,6 +135,7 @@ class DB:
 
         except Exception as e:
             print("Erro ao inserir alunos! Erro: ", e)
+            cls.conn.close()
             exit(1)
 
     @classmethod
@@ -150,6 +154,7 @@ class DB:
 
         except Exception as e:
             print("Erro ao inserir disciplinas! Erro: ", e)
+            cls.conn.close()
             exit(1)
 
     @classmethod
@@ -168,6 +173,7 @@ class DB:
 
         except Exception as e:
             print("Erro ao inserir professores! Erro: ", e)
+            cls.conn.close()
             exit(1)
 
     @classmethod
@@ -188,6 +194,7 @@ class DB:
 
         except Exception as e:
             print("Erro ao inserir turmas! Erro: ", e)
+            cls.conn.close()
             exit(1)
 
     @classmethod
@@ -211,4 +218,70 @@ class DB:
 
         except Exception as e:
             print("Erro ao inserir historico! Erro: ", e)
+            cls.conn.close()
             exit(1)
+
+    @classmethod
+    def query(cls, sql, *vars) -> List[Tuple]:
+        try:
+            cls.cursor.execute(sql, vars or ())
+            return cls.cursor.fetchall()
+        except Exception as e:
+            print(f"Erro ao realizar query='{sql}'! Erro: ", e)
+            cls.conn.close()
+            exit(1)
+
+    @classmethod
+    def fechar_conexao(cls):
+        if not cls.conn.closed:
+            cls.conn.close()
+
+
+class Query:
+    # Encontre a mat(matrícula) e nome dos alunos com nota em Fundamentos
+    # de Banco de dados maior que 7.
+    SQL_QUERY_1 = """
+        SELECT a.mat, a.nome FROM Alunos a, Historico h, Disciplinas d
+        WHERE a.mat = h.mat
+        AND h.cod_disc = d.cod_disc
+        AND d.nome = 'Fundamentos de Banco de Dados'
+        AND h.nota = 7;
+    """
+
+    # Calcule a média das notas dos alunos na disciplina de Computação Gráfica.
+    SQL_QUERY_2 = """
+        SELECT AVG(h.nota) FROM Alunos a, Historico h, Disciplinas d
+        WHERE a.mat = h.mat
+        AND h.cod_disc = d.cod_disc
+        AND d.nome LIKE 'Computação Gráfica%%';
+    """
+
+    # Retorne o nome dos alunos que tiveram a frequência menor que 0.75 e as
+    # disciplinas relacionadas.
+    SQL_QUERY_3 = """
+        SELECT a.nome, d.nome FROM Alunos a, Historico h, Disciplinas d
+        WHERE a.mat = h.mat
+        AND h.cod_disc = d.cod_disc
+        AND h.frequencia > 0.75;
+    """
+
+    # Imprima o nome dos professores da área de “Algoritmos e Otimização”
+    # que dão/deram aula para pelo menos 5 alunos, independente do semestre.
+    SQL_QUERY_4 = """
+        SELECT p.nome FROM Professores p, Turmas t, Historico h
+        WHERE p.area_pesquisa = 'Algoritmos e Otimização'
+        AND p.cod_prof = h.cod_prof
+        GROUP BY p.nome
+        HAVING COUNT(h.mat) >= 5;
+    """
+
+    # Retorne o nome e a data de nascimento dos alunos que tiraram nota menor
+    # que 5 na disciplina de Fundamentos de Bancos de Dados no semestre de 2021.1.
+    SQL_QUERY_5 = """
+        SELECT a.nome, a.data_nasc, h.ano FROM Alunos a, Disciplinas d, Historico h
+        WHERE a.mat = h.mat
+        AND h.nota < 5
+        AND d.cod_disc = h.cod_disc
+        AND h.ano = '2021.1'
+        AND d.nome = 'Fundamentos de Banco de Dados';
+    """
