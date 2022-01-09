@@ -58,7 +58,7 @@ SQL_HISTORICO = """
         frequencia DECIMAL NOT NULL,
         nota DECIMAL NOT NULL,
         PRIMARY KEY(cod_hist),
-        CONSTRAINT fk_mat FOREIGN KEY(mat) REFERENCES Alunos(mat) ON DELETE CASCADE
+        CONSTRAINT fk_mat FOREIGN KEY(mat) REFERENCES Alunos(mat) ON DELETE CASCADE,
         CONSTRAINT fk_cod_turma FOREIGN KEY(cod_turma) REFERENCES turmas(cod_turma) ON DELETE CASCADE
     )
 """
