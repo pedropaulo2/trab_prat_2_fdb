@@ -1,4 +1,4 @@
-from db.db import DB, Query
+from db.db import DB, Query, Transaction
 from leitor_csv.leitor_csv import LeitorCSV
 from utils.print import print_rows
 
@@ -55,4 +55,24 @@ print_rows(
         "que 5 na disciplina de Fundamentos de Bancos de Dados no semestre de 2021.1.\n"
     )
 )
+
+# Transação
+retorno = DB.transaction([Transaction.STATEMENT_1, Transaction.STATEMENT_2, Transaction.STATEMENT_3])
+labels = [
+    "\n\nInsere a seguinte tupla na tabela Alunos: (392889, Tiago, 3, 09/04/2001)\n",
+    "\n\nInsere a seguinte tupla na tabela Histórico: (392889, 1, 1, 1, 2020.1, 0.90,8).\n",
+    "\n\nEncontre a MAT(matrícula) e nome dos alunos com nota em Fundamentos de Banco de dados \nmaior que 8.\n"
+]
+
+i = 0
+for res in retorno:    
+
+    print_rows(
+        res,
+        label=(
+            labels[i]
+        )
+    )
+    i += 1
+
 DB.fechar_conexao()

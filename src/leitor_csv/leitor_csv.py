@@ -3,8 +3,12 @@ from csv import reader
 from typing import List
 from leitor_csv.data_classes import Aluno, Disciplina, Historico, Professor, Turma
 
+import os
 
 class LeitorCSV:
+
+    CAMINHO_ABSOLUTO_LEITOR_CSV = os.path.abspath(__file__)
+    CAMINHO_ABSOLUTO_DIRETORIO_DATA = os.path.join(CAMINHO_ABSOLUTO_LEITOR_CSV, os.pardir, os.pardir, 'data')
 
     alunos: List[Aluno] = []
     displinas: List[Disciplina] = []
@@ -22,7 +26,7 @@ class LeitorCSV:
 
     @staticmethod
     def ler_csv_alunos() -> None:
-        with open("data/Alunos.csv", encoding="utf-8") as file:
+        with open(os.path.join(LeitorCSV.CAMINHO_ABSOLUTO_DIRETORIO_DATA, "Alunos.csv"), encoding="utf-8") as file:
             csv_reader = reader(file)
             csv_reader.__next__()  # pulando a primeira linha do arquivo
             for line in csv_reader:
@@ -32,7 +36,7 @@ class LeitorCSV:
 
     @staticmethod
     def ler_csv_disciplinas() -> None:
-        with open("data/Disciplinas.csv", encoding="utf-8") as file:
+        with open(os.path.join(LeitorCSV.CAMINHO_ABSOLUTO_DIRETORIO_DATA,"Disciplinas.csv"), encoding="utf-8") as file:
             csv_reader = reader(file)
             csv_reader.__next__()  # pulando a primeira linha do arquivo
             for line in csv_reader:
@@ -42,7 +46,7 @@ class LeitorCSV:
 
     @staticmethod
     def ler_csv_historico() -> None:
-        with open("data/Historico.csv", encoding="utf-8") as file:
+        with open(os.path.join(LeitorCSV.CAMINHO_ABSOLUTO_DIRETORIO_DATA, "Historico.csv"), encoding="utf-8") as file:
             csv_reader = reader(file)
             csv_reader.__next__()  # pulando a primeira linha do arquivo
             for line in csv_reader:
@@ -63,7 +67,7 @@ class LeitorCSV:
 
     @staticmethod
     def ler_csv_professores() -> None:
-        with open("data/Professores.csv", encoding="utf-8") as file:
+        with open(os.path.join(LeitorCSV.CAMINHO_ABSOLUTO_DIRETORIO_DATA, "Professores.csv"), encoding="utf-8") as file:
             csv_reader = reader(file)
             csv_reader.__next__()  # pulando a primeira linha do arquivo
             for line in csv_reader:
@@ -73,7 +77,7 @@ class LeitorCSV:
 
     @staticmethod
     def ler_csv_turmas() -> None:
-        with open("data/Turmas.csv", encoding="utf-8") as file:
+        with open(os.path.join(LeitorCSV.CAMINHO_ABSOLUTO_DIRETORIO_DATA, "Turmas.csv"), encoding="utf-8") as file:
             csv_reader = reader(file)
             csv_reader.__next__()  # pulando a primeira linha do arquivo
             for line in csv_reader:

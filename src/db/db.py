@@ -59,6 +59,7 @@ SQL_HISTORICO = """
         nota DECIMAL NOT NULL,
         PRIMARY KEY(cod_hist),
         CONSTRAINT fk_mat FOREIGN KEY(mat) REFERENCES Alunos(mat) ON DELETE CASCADE
+        CONSTRAINT fk_cod_turma FOREIGN KEY(cod_turma) REFERENCES turmas(cod_turma) ON DELETE CASCADE
     )
 """
 
@@ -70,6 +71,7 @@ class DB:
     __PASSWORD = "Ck0114"
     conn = None
     cursor = None
+
 
     @classmethod
     def conectar(cls) -> None:
@@ -232,6 +234,29 @@ class DB:
             exit(1)
 
     @classmethod
+    def transaction(cls, sql_list: List[str]):
+        lista_retorno: List[List[Tuple]] = []
+        try:
+            for sql in sql_list:
+                cls.cursor.execute(sql)
+                retorno = None
+                try:
+                    retorno = cls.cursor.fetchall()
+                except:
+                    pass
+                if retorno != None:
+                    lista_retorno.append(retorno)
+                else:
+                    lista_retorno.append([])
+            cls.conn.commit()
+            return lista_retorno    
+
+        except Exception as e:
+            print(f"Erro ao realizar query='{sql}'! Erro: ", e)
+            cls.conn.close()
+            exit(1)
+
+    @classmethod
     def fechar_conexao(cls):
         if not cls.conn.closed:
             cls.conn.close()
@@ -245,7 +270,7 @@ class Query:
         WHERE a.mat = h.mat
         AND h.cod_disc = d.cod_disc
         AND d.nome = 'Fundamentos de Banco de Dados'
-        AND h.nota = 7;
+        AND h.nota > 7;
     """
 
     # Calcule a média das notas dos alunos na disciplina de Computação Gráfica.
@@ -284,4 +309,31 @@ class Query:
         AND d.cod_disc = h.cod_disc
         AND h.ano = '2021.1'
         AND d.nome = 'Fundamentos de Banco de Dados';
+    """
+
+class Transaction:
+
+    # Insere a seguinte tupla na tabela Alunos: (392889, Tiago, 3, 09/04/2001)
+    STATEMENT_1 = """
+        INSERT INTO Alunos(mat, nome, semestre, data_nasc)
+             VALUES(392889, 'Tiago', 3, '09/04/2001');
+    """
+
+    # Insere a seguinte tupla na tabela Histórico: (392889, 1, 1, 1, 2020.1, 0.90, 8)
+    STATEMENT_2 = """
+        INSERT INTO Historico(cod_hist, mat, cod_turma, cod_disc, cod_prof, ano, frequencia, nota)
+             VALUES(159, 392889, 1, 1, 1, '2020.1', 0.90, 8);
+    """
+
+    # Encontre a MAT(matrícula) e nome dos alunos com nota em Fundamentos de Banco de dados maior que 8.
+    STATEMENT_3 = """
+        SELECT al.mat, al.nome FROM Alunos al
+        INNER JOIN Historico hi
+	        ON al.mat = hi.mat
+        INNER JOIN Turmas tu
+	        ON hi.cod_turma = tu.cod_turma
+        INNER JOIN Disciplinas di
+	        ON tu.cod_disc = di.cod_disc
+        WHERE 
+            di.nome = 'Fundamentos de Banco de Dados' AND hi.nota > 8;
     """

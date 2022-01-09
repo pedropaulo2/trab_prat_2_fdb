@@ -5,7 +5,7 @@ def max_row_len(list: List[Tuple]) -> int:
     max_len = 0
     for tuple in list:
         new_tuple = (str(e) for e in tuple)
-        local_max_len = len(max(new_tuple, key=len))
+        local_max_len = len(max(new_tuple, key=len, default=''))
         if max_len < local_max_len:
             max_len = local_max_len
 
